@@ -19,14 +19,13 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += this.speed;
 
-    if(this.x == 500)
+    if(this.x >= 700)
     {
         this.x = -100;
-        this.y = enemyPositions[Math.floor(Math.random() * (3))];
-        this.speed = Math.floor(Math.random() * 6) + 5;
+        this.y = enemyPositions[randomNumber(2, 0)];
+        this.speed = randomNumber(5, 2);
     }
     this.render();
-
 };
 
 // Draw the enemy on the screen, required method for game
@@ -34,10 +33,14 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+function randomNumber(max, min){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-// Enemies our player must avoid
+
 var Player = function(x, y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -46,10 +49,10 @@ var Player = function(x, y) {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/char-pink-girl.png';
+    this.sprite = 'images/char-boy.png';
 };
 
-// Draw the enemy on the screen, required method for game
+// Draw the player on the screen, required method for game
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -87,9 +90,16 @@ Player.prototype.handleInput = function(key)
             this.y -= 82;
 
         if(this.y == -10)
-            setTimeout(function(){player = new Player(200, 400);}, 200);
-
+        {
+            this.nextLevel();
+        }
     }
+};
+
+Player.prototype.nextLevel = function()
+{
+    allEnemies.push(new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(3, 1)));
+    player = new Player(200, 400);
 };
 
 // Now instantiate your objects.
@@ -99,7 +109,7 @@ Player.prototype.handleInput = function(key)
 var enemyPositions = [60, 140, 220];
 var allEnemies = [];
 
-var enemy = new Enemy(-100, enemyPositions[Math.floor(Math.random() * (3))], Math.floor(Math.random() * 6) + 5);
+var enemy = new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(5, 2));
 allEnemies.push(enemy);
 
 var player = new Player(200, 400);
