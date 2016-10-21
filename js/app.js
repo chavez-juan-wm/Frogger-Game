@@ -17,15 +17,18 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x += this.speed;
+    this.render();
 
-    if(this.x >= 700)
+    this.x += (this.speed * dt);
+
+    if(this.x >= 510)
     {
         this.x = -100;
         this.y = enemyPositions[randomNumber(2, 0)];
-        this.speed = randomNumber(5, 2);
+        this.speed = randomNumber(400, 200);
     }
-    this.render();
+
+    checkCollision(this.x, this.y);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -46,6 +49,7 @@ var Player = function(x, y) {
     // we've provided one for you to get started
     this.x = x;
     this.y = y;
+    this.row = -2;
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -82,12 +86,18 @@ Player.prototype.handleInput = function(key)
     else if(key == 'down')
     {
         if (this.y != 400)
+        {
             this.y += 82;
+            this.row--;
+        }
     }
     else if(key == 'up')
     {
         if(this.y != -10)
+        {
             this.y -= 82;
+            this.row++;
+        }
 
         if(this.y == -10)
         {
@@ -98,18 +108,32 @@ Player.prototype.handleInput = function(key)
 
 Player.prototype.nextLevel = function()
 {
-    allEnemies.push(new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(3, 1)));
+    if(allEnemies.length != 5)
+        allEnemies.push(new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(400, 200)));
     player = new Player(200, 400);
 };
+
+function checkCollision(enemyX, enemyY)
+{
+    if (player.x < enemyX + 50 &&
+        player.x + 50 > enemyX &&
+        player.y < enemyY + 50 &&
+        50 + player.y > enemyY) {
+        // collision detected!
+        player = new Player(200, 400);
+    }
+
+}
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-var enemyPositions = [60, 140, 220];
+var enemyPositions = [220, 140, 60];
 var allEnemies = [];
 
-var enemy = new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(5, 2));
+var enemy = new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(400, 200));
 allEnemies.push(enemy);
 
 var player = new Player(200, 400);
@@ -118,9 +142,9 @@ var player = new Player(200, 400);
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
-        37: 'left', //-100 for x
+        37: 'left',
         38: 'up',
-        39: 'right', //+100 for x
+        39: 'right',
         40: 'down'
     };
 
