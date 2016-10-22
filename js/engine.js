@@ -14,6 +14,10 @@
  * a little simpler to work with.
  */
 
+var grabbed = false;
+var randomColumn = (Math.floor(Math.random() * (5))) * 101;
+var randomRow = (Math.floor(Math.random() * (3)) + 1) * 83;
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -80,7 +84,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -107,13 +110,14 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png',    // Row 2 of 2 of grass
+                'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -134,6 +138,14 @@ var Engine = (function(global) {
                  */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
+        }
+
+        if(!grabbed)
+            ctx.drawImage(Resources.get("images/Star.png"), randomColumn,  randomRow);
+        else
+        {
+            randomColumn = (Math.floor(Math.random() * (5))) * 101;
+            randomRow = (Math.floor(Math.random() * (3)) + 1) * 83;
         }
 
         renderEntities();
@@ -173,7 +185,7 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/char-pink-girl.png',
-        'images/chest.jpg'
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 

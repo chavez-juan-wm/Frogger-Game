@@ -19,13 +19,13 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.render();
 
-    this.x += (this.speed * dt);
+    this.x += this.speed;
 
     if(this.x >= 510)
     {
         this.x = -100;
         this.y = enemyPositions[randomNumber(2, 0)];
-        this.speed = randomNumber(400, 200);
+        this.speed = randomNumber(8, 2);
     }
 
     checkCollision(this.x, this.y);
@@ -44,12 +44,13 @@ function randomNumber(max, min){
 // This class requires an update(), render() and
 // a handleInput() method.
 
-var Player = function(x, y) {
+var Player = function(x, y, score) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.x = x;
     this.y = y;
     this.row = -2;
+    this.score = score;
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
@@ -109,20 +110,38 @@ Player.prototype.handleInput = function(key)
 Player.prototype.nextLevel = function()
 {
     if(allEnemies.length != 5)
-        allEnemies.push(new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(400, 200)));
-    player = new Player(200, 400);
+        allEnemies.push(new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(8, 2)));
+
+    if(!grabbed)
+    {
+        randomColumn = (Math.floor(Math.random() * (5))) * 101;
+        randomRow = (Math.floor(Math.random() * (3)) + 1) * 83;
+    }
+
+    grabbed = false;
+    player = new Player(200, 400, (player.score + 50));
+    document.getElementById("score").innerHTML = "Score: " + player.score;
 };
 
 function checkCollision(enemyX, enemyY)
 {
-    if (player.x < enemyX + 50 &&
-        player.x + 50 > enemyX &&
-        player.y < enemyY + 50 &&
-        50 + player.y > enemyY) {
-        // collision detected!
-        player = new Player(200, 400);
+    if (player.x < enemyX + 50 && player.x + 50 > enemyX && player.y < enemyY + 50 && 50 + player.y > enemyY)
+    {
+        // Collision detected!
+        player = new Player(200, 400, (player.score - 50));
+        document.getElementById("score").innerHTML = "Score: " + player.score;
     }
 
+    if (player.x < randomColumn + 50 && player.x + 50 > randomColumn && player.y < randomRow + 50 && 50 + player.y > randomRow)
+    {
+        // Grabbed the bonus points!
+        if(!grabbed)
+        {
+            grabbed = true;
+            player.score += 100;
+            document.getElementById("score").innerHTML = "Score: " + player.score;
+        }
+    }
 }
 
 
@@ -133,10 +152,10 @@ function checkCollision(enemyX, enemyY)
 var enemyPositions = [220, 140, 60];
 var allEnemies = [];
 
-var enemy = new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(400, 200));
+var enemy = new Enemy(-100, enemyPositions[randomNumber(2, 0)], randomNumber(8, 2));
 allEnemies.push(enemy);
 
-var player = new Player(200, 400);
+var player = new Player(200, 400, 0);
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
