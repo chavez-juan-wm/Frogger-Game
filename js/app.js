@@ -21,7 +21,7 @@ Enemy.prototype.update = function(dt) {
 
     this.x += this.speed;
 
-    if(this.x >= 510)
+    if(this.x >= 820)
     {
         this.x = -100;
         this.y = enemyPositions[randomNumber(2, 0)];
